@@ -2,9 +2,9 @@ Vector Calc (due: 2016-02-04)
 ===
 <p><strong>Submit a working C++ program which computes vector operations given a list of variables and operations.</strong></p>
 The program should:
-	* read from standard in (<code>cin</code>)
-	* output to standard out (<code>cout</code>)
-	* implement a vector2 class with overloaded operators.
+ * read from standard in (<code>cin</code>)
+ * output to standard out (<code>cout</code>)
+ * implement a vector2 class with overloaded operators.
 
 <h2>Input</h2>
 <p>Input begins with vector definitions on each line with the format <code>name x y</code> where:
