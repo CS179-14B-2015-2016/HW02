@@ -29,6 +29,7 @@ Vector definitions end with a line containing <code>=</code>, followed by comput
 			<li><code>%</code> -- Cross product.</li>
 			<li><code>()</code> -- Opening and closing parenthesis.</li>
 		</ul>
+		Note that all operations are LEFT-ASSOCIATIVE (i.e. `a op b op c` is equivalent to `((a op b) op c)`.
 	</li>
 </ul>
 <p>
@@ -43,7 +44,7 @@ For CS majors, expect the computation lines to be full-blown expressions like <c
 For each computation line, output the result of the computation followed by a new line. If the result is an invalid computation, output <code>INVALID</code> instead.
 
 <h2>Sample Input/Output</h2>
-(more to follow, keep posted!)
+(check the `test` directory for more cases!)
 <pre><code>a 1 1
 b 2 3
 c 1.0 -1.5
