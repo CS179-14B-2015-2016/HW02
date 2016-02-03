@@ -4,4 +4,33 @@ public:
 	float x, y;
 	Vector2(): x(0), y(0) {}
 	Vector2(float x, float y): x(0), y(0) {}
+
+	// operator overloading
+	Vector2 operator+(const Vector2& rhs) const {
+		return Vector2(x+rhs.x, y+rhs.y);
+	}
+
+	Vector2 operator-(const Vector2& rhs) const {
+		return Vector2(x-rhs.x, y-rhs.y);
+	}
+
+	Vector2 operator*(const float rhs) const {
+		return Vector2(x*rhs, y*rhs);
+	}
+
+	Vector2 operator/(const float rhs) const {
+		return Vector2(x/rhs, y/rhs);
+	}
+
+	float operator*(const Vector2& rhs) const {
+		return (x*rhs.x)+(y*rhs.y);
+	}
+
+	float operator%(const Vector2& rhs) const {
+		return (x*rhs.y)-(y*rhs.x);
+	}
 };
+
+inline Vector2 operator*(const float lhs, const Vector2& rhs) {
+	return rhs*lhs;
+}
