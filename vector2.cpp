@@ -139,20 +139,20 @@ void postfixer(char infix[], char postfix[], int size) {
 
 int main(int argc, char** argv)
 {
-	string declaration;
 	string input;
+	float xpos;
+	float ypos;
 	while(input != '=')
 	{
-		cin >> input;
-		char infix[] = input;
-		int size = strlen(infix);
-		char postfix[size];
+		cin << input << xpos << ypos;
+		vector2::vector2(input,xpos,ypos);
 	}
-   
+   	//postfix things
+   	/*
 	int size = strlen(infix);
 	char postfix[size];
 	postifxer(infix,postfix,size);
-	
+	*/
 	return 0;
 	
 	
