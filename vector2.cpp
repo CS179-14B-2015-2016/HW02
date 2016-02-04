@@ -10,15 +10,16 @@ template<class T>
 class vector2
 {
 	public:
+	string name;
 	T x;
 	T y;
 	
 	//constructor
-	vector2::vector2(string& name, T& a, T&b)
+	vector2::vector2(string& derp, T& a, T&b)
 	{
-		vector2 name;
-		name.x = a;
-		name.y = b;
+		name = derp;
+		x = a;
+		y = b;
 	}
 	
 	//vector addition
