@@ -145,6 +145,14 @@ int main(int argc, char** argv)
 	while(input != '=')
 	{
 		cin << input << xpos << ypos;
+		if (xpos.empty()) 
+		{
+			break;
+		}
+		if (ypos.empty()) 
+		{
+			break;
+		}
 		vector2::vector2(input,xpos,ypos);
 	}
    	//postfix things
