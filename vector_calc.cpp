@@ -14,7 +14,7 @@ int main()
 	{
 		float x, y;
 		cin >> x >> y;
-		if(variable.find(name)==variable.end())
+		if(variable.find(name)!=variable.end())
 			cout << "INVALID: VARIABLE NAME USED" << endl;
 		else
 			variable[name] = Vector2(x, y);
