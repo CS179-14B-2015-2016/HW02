@@ -3,6 +3,7 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#include <queue>
 using namespace std;
 
 #define isAlpha(c) ('A'<=c && c<='Z')||('a'<=c && c<='z')
@@ -118,13 +119,13 @@ int main()
 		if(!valid) break;
 		
 		// shunting yard
-		vector<token> postfix;
+		queue<token> postfix;
 		vector<token> opStack;
 		
 		for(int i=0; i<t.size() && valid; i++)
 		{
 			if(t[i].type!=OPERATOR)
-				postfix.push_back(t[i]);
+				postfix.push(t[i]);
 			else if(t[i].op=='(') {
 				opStack.push_back(t[i]);
 			}
@@ -142,7 +143,7 @@ int main()
 					if(last.op=='(')
 						finish = true;
 					else
-						postfix.push_back(last);
+						postfix.push(last);
 				}
 			}
 			else {
@@ -150,7 +151,7 @@ int main()
 					token last = opStack.back();
 					if(last.op!='(' && operatorPrecedence(t[i].op)<=operatorPrecedence(last.op)) {
 						opStack.pop_back();
-						postfix.push_back(last);
+						postfix.push(last);
 						continue;
 					}
 					break;
@@ -161,7 +162,7 @@ int main()
 		if(!valid) continue;
 		
 		while(!opStack.empty()){
-			postfix.push_back(opStack.back());
+			postfix.push(opStack.back());
 			opStack.pop_back();
 		}
 		
