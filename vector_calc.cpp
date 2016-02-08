@@ -4,6 +4,10 @@
 #include <iostream>
 using namespace std;
 
+#define isAlpha(c) ('A'<=c && c<='Z')||('a'<=c && c<='z')
+#define isNumeric(c) ('0'<=c && c<='9')||(c=='.')
+#define isOp(c) (c=='+' || c=='-' || c=='*' || c=='%' || c=='/' || c=='(' || c==')')
+
 enum tokenType {
 	SCALAR,
 	VECTOR,
