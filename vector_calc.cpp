@@ -8,7 +8,7 @@
 #include <cassert>
 using namespace std;
 
-#define isAlpha(c) ('A'<=c && c<='Z')||('a'<=c && c<='z')
+#define isAlpha(c) (('A'<=c && c<='Z')||('a'<=c && c<='z'))
 #define isNumeric(c) ('0'<=c && c<='9')||(c=='.')
 #define isOp(c) (c=='+' || c=='-' || c=='*' || c=='%' || c=='/' || c=='(' || c==')')
 
@@ -52,7 +52,7 @@ int main()
 		{
 			if(tokenName.length()>0)
 			{
-				if(isAlpha(tokenName[0]) && (i==eq.length() || (isNumeric(eq[i])||isOp(eq[i])||eq[i]==' '))) {
+				if( ( i==eq.length() || isNumeric(eq[i]) || isOp(eq[i]) || eq[i]==' ' ) && isAlpha(tokenName[0]) ) {
 					if(t.size()>0 && (t.back().type!=OPERATOR || t.back().op==')'))	t.push_back(token('s'));
 					
 					if(variable.find(tokenName)==variable.end())
@@ -65,9 +65,8 @@ int main()
 						t.push_back(temp);
 					}
 					tokenName = "";
-				} else if(isNumeric(tokenName[0]) && (i==eq.length() || (isAlpha(eq[i])||isOp(eq[i])||eq[i]==' '))) {
+				} else if( ( i==eq.length() || isAlpha(eq[i]) || isOp(eq[i]) || eq[i]==' ' ) && isNumeric(tokenName[0]) )  {
 					if(t.size()>0 && (t.back().type!=OPERATOR || t.back().op==')'))	t.push_back(token('s'));
-					
 					istringstream stream(tokenName);
 					float f; stream >> f;
 					token temp(f);
@@ -84,7 +83,7 @@ int main()
 				t.push_back(token(eq[i]));
 			}
 		}
-		if(!valid) break;
+		if(!valid) continue;
 		
 		// shunting yard
 		queue<token> postfix;
