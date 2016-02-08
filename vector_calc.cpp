@@ -43,6 +43,18 @@ std::ostream& operator<<(std::ostream& os, const token& t) {
 	return os;
 }
 
+int operatorPrecedence(const char& op) {
+	switch(op) {
+		case '+': return 1;
+		case '-': return 1;
+		case '*': return 1;
+		case '%': return 1;
+		case '/': return 1;
+		case 's': return 2;
+	}
+	return 1;
+}
+
 int main()
 {
 	map<string, Vector2> variable;
