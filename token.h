@@ -36,4 +36,56 @@ std::ostream& operator<<(std::ostream& os, const token& t) {
 	return os;
 }
 
+token operate(const token& lhs, const token& rhs, const char op, bool* valid) {
+	switch(op) {
+		case '+':
+			if(lhs.type==VECTOR && rhs.type==VECTOR)
+				return token(lhs.v+rhs.v);
+			else if(lhs.type==SCALAR && rhs.type==SCALAR)
+				return token(lhs.f+rhs.f);
+			else {
+				*valid = false;
+				return token();
+			}
+		case '-':
+			if(lhs.type==VECTOR && rhs.type==VECTOR)
+				return token(lhs.v-rhs.v);
+			else if(lhs.type==SCALAR && rhs.type==SCALAR)
+				return token(lhs.f-rhs.f);
+			else {
+				*valid = false;
+				return token();
+			}
+		case '*':
+			if(lhs.type==VECTOR && rhs.type==VECTOR)
+				return token(lhs.v*rhs.v);
+			else if(lhs.type==VECTOR && rhs.type==SCALAR)
+				return token(lhs.v*rhs.f);
+			else if(lhs.type==SCALAR && rhs.type==VECTOR)
+				return token(lhs.f*rhs.v);
+			else if(lhs.type==SCALAR && rhs.type==SCALAR)
+				return token(lhs.f*rhs.f);
+			else {
+				*valid = false;
+				return token();
+			}
+		case '%':
+			if(lhs.type==VECTOR && rhs.type==VECTOR)
+				return token(lhs.v%rhs.v);
+			else {
+				*valid = false;
+				return token();
+			}
+		case '/':
+			if(lhs.type==VECTOR && rhs.type==SCALAR)
+				return token(lhs.v/rhs.f);
+			else if(lhs.type==SCALAR && rhs.type==SCALAR)
+				return token(lhs.f/rhs.f);
+			else {
+				*valid = false;
+				return token();
+			}
+	}
+	return token();
+}
 #endif
