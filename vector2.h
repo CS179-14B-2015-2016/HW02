@@ -1,3 +1,5 @@
+#include<iostream>
+
 class Vector2
 {
 public:
@@ -29,7 +31,13 @@ public:
 	float operator%(const Vector2& rhs) const {
 		return (x*rhs.y)-(y*rhs.x);
 	}
+	
 };
+
+std::ostream& operator<<(std::ostream& os, const Vector2& v) {
+	os << "<" << v.x << ", " << v.y << ">";
+	return os;
+}
 
 inline Vector2 operator*(const float lhs, const Vector2& rhs) {
 	return rhs*lhs;
