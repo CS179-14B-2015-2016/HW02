@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <queue>
+#include <cassert>
 using namespace std;
 
 #define isAlpha(c) ('A'<=c && c<='Z')||('a'<=c && c<='z')
@@ -138,11 +139,35 @@ int main()
 		while(!postfix.empty() && valid)
 		{
 			token curr = postfix.front();
+			postfix.pop();
 			if(curr.type!=OPERATOR) {
 				valueStack.push_back(curr);
 				continue;
 			}
+			
+			char currOp = curr.op;
+			if(currOp=='s') currOp = '*';
+			
+			if(valueStack.size()<2)
+			{
+				valid = false;
+				cout << "INVALID: pairing of values failed" << endl;
+				break;
+			}
+			token rhs = valueStack.back();
+			valueStack.pop_back();
+			token lhs = valueStack.back();
+			valueStack.pop_back();
+			
+			token next = operate(lhs, rhs, currOp, &valid);
+			if(!valid) cout << "INVALID" << endl;
+			valueStack.push_back(next);
 		}
+		if(!valid) continue;
+		
+		assert(valueStack.size()==1);
+		token result = valueStack.back();
+		cout << result << endl;
 	}
 
 	return 0;
