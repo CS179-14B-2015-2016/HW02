@@ -4,18 +4,17 @@
 #include <iostream>
 using namespace std;
 
+enum tokenType {
+	SCALAR,
+	VECTOR,
+	OPERATOR
+};
 struct token {
 	union {
 		char op;
 		float f;
 		Vector2 v;
 	};
-	enum {
-		SCALAR,
-		VECTOR,
-		OPERATOR
-	} type;
-	
 	token(float f=0): type(SCALAR) {
 		this->f = f;
 	}
