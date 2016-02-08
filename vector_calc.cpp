@@ -1,4 +1,5 @@
 #include "vector2.h"
+#include "token.h"
 #include <vector>
 #include <map>
 #include <iostream>
@@ -10,40 +11,6 @@ using namespace std;
 #define isNumeric(c) ('0'<=c && c<='9')||(c=='.')
 #define isOp(c) (c=='+' || c=='-' || c=='*' || c=='%' || c=='/' || c=='(' || c==')')
 
-enum tokenType {
-	SCALAR,
-	VECTOR,
-	OPERATOR
-};
-
-struct token {
-	union {
-		char op;
-		float f;
-		Vector2 v;
-	};
-	tokenType type;
-	token(float f=0): type(SCALAR) {
-		this->f = f;
-	}
-	token(Vector2 v): type(VECTOR) {
-		this->v = v;
-	}
-	token(char op): type(OPERATOR) {
-		this->op = op;
-	}
-};
-
-std::ostream& operator<<(std::ostream& os, const token& t) {
-	if(t.type==SCALAR)
-		os << t.f;
-	else if(t.type==VECTOR)
-		os << t.v;
-	else if(t.type==OPERATOR)
-		os << t.op;
-	return os;
-}
-
 int operatorPrecedence(const char& op) {
 	switch(op) {
 		case '+': return 1;
@@ -54,10 +21,6 @@ int operatorPrecedence(const char& op) {
 		case 's': return 2;
 	}
 	return 1;
-}
-
-token operate(const token& lhs, const token& rhs, const token& op, bool* valid) {
-	
 }
 
 int main()
