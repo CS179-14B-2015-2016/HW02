@@ -1,3 +1,5 @@
+#ifndef vector2_H
+#define vector2_H
 #include<iostream>
 
 class Vector2
@@ -42,3 +44,4 @@ std::ostream& operator<<(std::ostream& os, const Vector2& v) {
 inline Vector2 operator*(const float lhs, const Vector2& rhs) {
 	return rhs*lhs;
 }
+#endif

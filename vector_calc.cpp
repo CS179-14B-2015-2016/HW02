@@ -56,6 +56,10 @@ int operatorPrecedence(const char& op) {
 	return 1;
 }
 
+token operate(const token& lhs, const token& rhs, const token& op, bool* valid) {
+	
+}
+
 int main()
 {
 	map<string, Vector2> variable;
@@ -167,7 +171,15 @@ int main()
 		}
 		
 		// evaluation
-		
+		vector<token> valueStack;
+		while(!postfix.empty() && valid)
+		{
+			token curr = postfix.front();
+			if(curr.type!=OPERATOR) {
+				valueStack.push_back(curr);
+				continue;
+			}
+		}
 	}
 
 	return 0;
