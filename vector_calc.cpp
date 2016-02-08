@@ -76,10 +76,10 @@ int main()
 	{
 		vector<token> t;
 		
-		// parsing the equation
+		// tokenizing the equation
 		string tokenName;
 		bool valid = true;
-		for(int i=0; i<=eq.length(); i++)
+		for(int i=0; i<=eq.length() && valid; i++)
 		{
 			if(tokenName.length()>0)
 			{
@@ -88,8 +88,9 @@ int main()
 					
 					if(variable.find(tokenName)==variable.end())
 					{
-						valid = false;
 						cout << "INVALID: '" << tokenName << "' is not defined!" << endl;
+						valid = false;
+						break;
 					} else {
 						token temp(variable[tokenName]);
 						t.push_back(temp);
@@ -114,12 +115,58 @@ int main()
 				t.push_back(token(eq[i]));
 			}
 		}
+		if(!valid) break;
 		
-		for(int i=0; i<t.size(); i++){
-			token& temp = t[i];
-			cout << temp << " ";
+		// shunting yard
+		vector<token> postfix;
+		vector<token> opStack;
+		
+		for(int i=0; i<t.size() && valid; i++)
+		{
+			if(t[i].type!=OPERATOR)
+				postfix.push_back(t[i]);
+			else if(t[i].op=='(') {
+				opStack.push_back(t[i]);
+			}
+			else if(t[i].op==')') {
+				bool finish = false;
+				while(!finish) {
+					if(opStack.empty()) {
+						cout << "INVALID: mismatched parenthesis"<< endl;
+						valid = false;
+						break;
+					}
+					
+					token last = opStack.back();
+					opStack.pop_back();
+					if(last.op=='(')
+						finish = true;
+					else
+						postfix.push_back(last);
+				}
+			}
+			else {
+				while(!opStack.empty()) {
+					token last = opStack.back();
+					if(last.op!='(' && operatorPrecedence(t[i].op)<=operatorPrecedence(last.op)) {
+						opStack.pop_back();
+						postfix.push_back(last);
+						continue;
+					}
+					break;
+				}
+				opStack.push_back(t[i]);
+			}
 		}
-		cout << endl;
+		if(!valid) continue;
+		
+		while(!opStack.empty()){
+			postfix.push_back(opStack.back());
+			opStack.pop_back();
+		}
+		
+		// evaluation
+		
 	}
 
 	return 0;
