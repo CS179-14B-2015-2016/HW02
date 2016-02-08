@@ -19,6 +19,7 @@ struct token {
 		float f;
 		Vector2 v;
 	};
+	tokenType type;
 	token(float f=0): type(SCALAR) {
 		this->f = f;
 	}
@@ -29,6 +30,16 @@ struct token {
 		this->op = op;
 	}
 };
+
+std::ostream& operator<<(std::ostream& os, const token& t) {
+	if(t.type==SCALAR)
+		os << t.f;
+	else if(t.type==VECTOR)
+		os << t.v;
+	else if(t.type==OPERATOR)
+		os << t.op;
+	return os;
+}
 
 int main()
 {
