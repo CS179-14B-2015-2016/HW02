@@ -144,9 +144,7 @@ int main()
 				continue;
 			}
 			
-			char currOp = curr.op;
-			if(currOp=='s') currOp = '*';
-			
+			char currOp = curr.op;			
 			if(valueStack.size()<2)
 			{
 				valid = false;

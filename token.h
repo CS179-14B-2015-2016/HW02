@@ -69,6 +69,17 @@ token operate(const token& lhs, const token& rhs, const char op, bool* valid) {
 				*valid = false;
 				return token();
 			}
+		case 's':
+			if(lhs.type==VECTOR && rhs.type==SCALAR)
+				return token(lhs.v*rhs.f);
+			else if(lhs.type==SCALAR && rhs.type==VECTOR)
+				return token(lhs.f*rhs.v);
+			else if(lhs.type==SCALAR && rhs.type==SCALAR)
+				return token(lhs.f*rhs.f);
+			else {
+				*valid = false;
+				return token();
+			}
 		case '%':
 			if(lhs.type==VECTOR && rhs.type==VECTOR)
 				return token(lhs.v%rhs.v);
