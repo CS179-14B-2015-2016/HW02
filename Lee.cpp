@@ -37,23 +37,26 @@ class Equation {
 vector<Vector2> v2;
 
 int main() {
+	cout << "Input begins with vector definitions on each line with the format 'name x y' where:" << '\n';
+	cout << "   name - name of the variable. Contains no spaces, reserved operators, and numbers" << '\n';
+	cout << "   x    - x-coordinate of the vector" << '\n';
+	cout << "   y    - y-coordinate of the vector" << '\n';
+	cout << "Vector definitions end with a line containing '=' followed by computation lines." << '\n';
 	while (1) {
-		while (1) {
-			Vector2 v;
-			cin >> v;
-			if (cin.fail()) cin.clear();
-			else if (cin.eof()) {
-				cin.clear();
-				break;
-			}
-			else v2.push_back(v);
+		Vector2 v;
+		cin >> v;
+		if (cin.fail()) cin.clear();
+		else if (cin.eof()) {
+			cin.clear();
+			break;
 		}
-		while (1) {
-			Equation e;
-			cin >> e;
-			if (cin.fail()) cin.clear();
-			else cout << e.lhs << '\n';
-		}
+		else v2.push_back(v);
+	}
+	while (1) {
+		Equation e;
+		cin >> e;
+		if (cin.fail()) cin.clear();
+		else cout << e.lhs << '\n';
 	}
 }
 
