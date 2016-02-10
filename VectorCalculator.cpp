@@ -8,63 +8,67 @@
 #include <vector>
 #include <queue>
 #include <stack>
-#include <typeinfo>
+#include <cctype>
 
 
 
 using namespace std;
-template <typename T>
 class Vect
 {
 public:
-	T x, y;
+	double x, y;
 
-	Vect(T x, T y) : x(x), y(y) {};
+	Vect(double x, double y) : x(x), y(y) {};
 
 
-	Vect operator+(const Vect &rhs) { //add
+	Vect operator+(const Vect &rhs) const { //add
 		return Vect(x + rhs.x, y + rhs.y);
 	}
 
-	Vect operator-(const Vect &rhs) { //sub
+	Vect operator-(const Vect &rhs) const { //sub
 		return Vect(x - rhs.x, y - rhs.y);
 	}
 
-	T operator*(const Vect &rhs) { // dot prod
-		return T(x*rhs.x + y*rhs.y);
+	double operator*(const Vect &rhs) const { // dot prod
+		return (x * rhs.x + y * rhs.y);
 	}
 
-	Vect operator*(const T &val) { //scal mult
+	Vect operator*(const double &val) const { //scal mult
 		return Vect(val * x, val * y);
 	}
 
-	Vect operator/(const T &val) { // scal div
+	Vect operator/(const double &val) const { // scal div
 		return Vect(x / val, y / val);
 	}
 
-	T operator%(const Vect &rhs) { //cross
-		return T(x*rhs.y - y*rhs.x);
+	double operator%(const Vect &rhs) const { //cross
+		return (x*rhs.y - y*rhs.x);
 	}
 
-	Vect* operator()() {
-		return this;
-	}
 
 };
 
-template <typename T>
-T operator*(const T &val, const Vect<T> &rhs) {
+Vect operator*(const double &val, const Vect &rhs) {
 	return Vect(val * rhs.x, val * rhs.y);
 }
 
-template <typename T>
-struct Eval {
-	bool isScal, isVec;
-	Vect<T> vec;
-	T scal;
-	Eval(T scal, Vect<T> vec, bool isScal, bool isVec) : scal(scal), vec(vec), isScal(isScal), isVec(isVec) {};
+struct Value {
+	enum Type { VECTOR, SCALAR, ERROR } type;
+	union {
+		double scal;
+		Vect vec;
+	};
+	Value(const Vect &v) : type(VECTOR), vec(v) {}
+	Value(const double &d) : type(SCALAR), scal(d){}
+	Value() : type(ERROR), scal(-1.0) {}
 };
 
+
+struct Tokens {
+	enum Token{OPERATOR,VECTOR,SCALAR} type;
+	string token;
+	Tokens(string s) : token(s){}
+};
 
 vector<string> getTokens(const string &input) {
 	vector<string> tokens;
@@ -108,17 +112,8 @@ int getOpWeight(const char &c) {
 };
 
 
-bool IsOperand(char C) {
-	if (C >= '0' && C <= '9') return true;
-	if (C >= 'a' && C <= 'z') return true;
-	if (C >= 'A' && C <= 'Z') return true;
-	return false;
-};
-
 bool IsVector(const char &c) {
-	if (c >= 'a' && c <= 'z') return true;
-	if (c >= 'A' && c <= 'Z') return true;
-	return false;
+	return isalpha(c);
 }
 
 
@@ -136,189 +131,251 @@ bool HasHigherPrec(const char &top, const char &inc) {
 	return topW > incW ? true : false;
 };
 
-template <typename T>
-Eval<T> EvalMe(Eval<T> o1, Eval<T> o2, const char &c) {
+
+
+
+
+Value EvalMe(const Value &o1,const Value &o2,const char &c){
 	switch (c) {
 	case'-':
-		if ((o1.isScal && o2.isVec) || (o1.isVec && o2.isScal))
-			return Eval<T>(-1, o1.vec, true, true);
-		else if (o1.isScal)
-			return Eval<T>(o1.scal - o2.scal, o1.vec, true, false);
+		if ((o1.type == Value::Type::SCALAR && o2.type == Value::Type::VECTOR) || (o1.type == Value ::Type::VECTOR && o2.type == Value::Type::SCALAR))
+			return Value();
+		else if (o1.type == Value::Type::SCALAR)
+			return Value(o1.scal - o2.scal);
 		else
-			return Eval<T>(-1, o1.vec - o2.vec, false, true);
+			return Value(o1.vec - o2.vec);
 		break;
 	case'+':
-		if ((o1.isScal && o2.isVec) || (o1.isVec && o2.isScal))
-			return Eval<T>(-1, o1.vec, true, true);
-		else if (o1.isScal)
-			return Eval<T>(o1.scal + o2.scal, o1.vec, true, false);
+		if ((o1.type == Value::Type::SCALAR && o2.type == Value ::Type::VECTOR) || (o1.type == Value::Type::VECTOR && o2.type == Value::Type::SCALAR))
+			return Value();
+		else if (o1.type == Value::Type::SCALAR)
+			return Value(o1.scal + o2.scal);
 		else
-			return Eval<T>(-1, o1.vec + o2.vec, false, true);
+			return Value(o1.vec + o2.vec);
 		break;
 	case'/':
-		if (o2.isVec)
-			return Eval<T>(-1, o1.vec, true, true);
-		else if (o1.isScal)
-			return Eval<T>(o1.scal / o2.scal, o1.vec, true, false);
+		if (o2.type == Value::Type::VECTOR)
+			return Value();
+		else if (o1.type == Value::Type::SCALAR)
+			return Value(o1.scal / o2.scal);
 		else
-			return Eval<T>(-1, o1.vec / o2.scal, false, true);
+			return Value(o1.vec / o2.scal);
 		break;
 	case'*':
-		if (o1.isScal && o2.isScal)
-			return Eval<T>(o1.scal * o2.scal, o1.vec, true, false);
-		else if (o1.isScal)
-			return Eval<T>(-1, o2.vec * o1.scal, false, true);
-		else if (o2.isScal)
-			return Eval<T>(-1, o1.vec * o2.scal, false, true);
+		if (o1.type == Value::Type::SCALAR && o2.type == Value::Type::SCALAR) 
+			return Value(o1.scal * o2.scal);
+		else if (o1.type == Value::Type::SCALAR)
+			return Value(o2.vec * o1.scal);
+		else if (o2.type == Value::Type::SCALAR)
+			return Value(o1.vec * o2.scal);
 		else
-			return Eval<T>(o1.vec * o2.vec, o1.vec, true, false);
+			return Value(o1.vec * o2.vec);
 		break;
 	case'%':
-		if (o1.isScal || o2.isScal)
-			return Eval<T>(-1, o1.vec, true, true);
+		if (o1.type == Value::Type::SCALAR || o2.type == Value::Type::SCALAR)
+			return Value();
 		else
-			return Eval<T>(o1.vec % o2.vec, o1.vec, true, false);
+			return Value(o1.vec % o2.vec);
 		break;
-
 	}
-	return Eval<T>(-1, o1.vec, true, true);
-}
 
+	return Value();
+}
 int main() {
 	string inputs = "";
-	unordered_map < string, Vect<int>> vects;
-	vects.clear();
+	unordered_map<string, Vect> vects;
 	//start
-	//get vectors from input 
 	while (true) {
+		//get vectors as input
 		getline(cin, inputs);
 		if (inputs.find("=") == string::npos) {
 			vector<string> tokens = getTokens(inputs);
-			int x = stoi(tokens[1].c_str());
-			int y = stoi(tokens[2].c_str());
-			Vect<int> temp(x, y);
+			istringstream s(tokens[1]);
+			double x;
+			double y;
+			s >> x;
+			s.clear();
+			s.str(tokens[2]);
+			s >> y;
+			Vect temp(x, y);
 			vects.insert(make_pair(tokens[0], temp));
 		}
 		else {
 			break;
 		}
 	}
-	while (true) {
-		getline(cin, inputs);
+
+	//postfix and evaluation
+
+	while (getline(cin, inputs)) {
+		stack<char> operand_stack;
+		vector<Tokens> postfix_token;
+		postfix_token.clear();
+		string vec = "";
+		string scal = "";
+		bool addmult = false;
+		bool addmult_end = false;
+		for (char c : inputs) {
+			if (c == ' ') continue;
+			if (isOperator(c)) {
+				if (vec.size() > 0) {
+					Tokens temp(vec);
+					temp.type = Tokens::VECTOR;
+					postfix_token.push_back(temp);
+					vec = "";
+				}
+				if (scal.size() > 0) {
+					Tokens temp(scal);
+					temp.type = Tokens::SCALAR;
+					postfix_token.push_back(temp);
+					scal = "";
+				}
+				while (!operand_stack.empty() && !isOpenPar(c) && HasHigherPrec(operand_stack.top(), c)) {
+					string toAdd = "";
+					toAdd += operand_stack.top();
+					Tokens temp(toAdd);
+					temp.type = Tokens::OPERATOR;
+					postfix_token.push_back(temp);
+					operand_stack.pop();
+				}
+				operand_stack.push(c);
+				addmult = false;
+				addmult_end = false;
+			}
+			else if (isOpenPar(c)) {
+				if (addmult) {
+					operand_stack.push('*');
+				}
+				addmult = false;
+				addmult_end = false;
+				operand_stack.push(c);
+			}
+			else if (isClosePar(c)) {
+				if (vec.size() > 0) {
+					Tokens temp(vec);
+					temp.type = Tokens::VECTOR;
+					postfix_token.push_back(temp);
+					vec = "";
+				}
+				if (scal.size() > 0) {
+					Tokens temp(scal);
+					temp.type = Tokens::SCALAR;
+					postfix_token.push_back(temp);
+					scal = "";
+				}
+				while (!operand_stack.empty() && !isOpenPar(operand_stack.top())) {
+					string toAdd = "";
+					toAdd += operand_stack.top();
+					Tokens temp(toAdd);
+					temp.type = Tokens::OPERATOR;
+					postfix_token.push_back(temp);
+					operand_stack.pop();
+				}
+				operand_stack.pop();
+				addmult = false;
+				addmult_end = true;
+			}
+			else if (IsVector(c)) {
+				if (scal.size() > 0) {
+					Tokens temp(scal);
+					temp.type = Tokens::SCALAR;
+					postfix_token.push_back(temp);
+					scal = "";
+					operand_stack.push('*');
+				}
+				addmult = false;
+				addmult_end = false;
+				vec += c;
+			}
+			else { // scalar includes "."
+				if (vec.size() > 0) {
+					Tokens temp(vec);
+					temp.type = Tokens::VECTOR;
+					postfix_token.push_back(temp);
+					vec = "";
+					operand_stack.push('*');
+				}
+				if (addmult_end) {
+					operand_stack.push('*');
+				}
+
+				addmult = true;
+				addmult_end = false;
+				scal += c;
+			}
+		}
+		if (vec.size() > 0) {
+			Tokens temp(vec);
+			temp.type = Tokens::VECTOR;
+			postfix_token.push_back(temp);
+			vec = "";
+		}
+		if (scal.size() > 0) {
+			Tokens temp(scal);
+			temp.type = Tokens::SCALAR;
+			postfix_token.push_back(temp);
+			scal = "";
+		}
+
+		while (!operand_stack.empty()) {
+			string toAdd = "";
+			toAdd += operand_stack.top();
+			Tokens temp(toAdd);
+			temp.type = Tokens::OPERATOR;
+			postfix_token.push_back(temp);
+			operand_stack.pop();
+		}
+
 		string output = "";
-		if (inputs.find("=") == string::npos) {
-			stack<char> tokens;
-			string postfix = "";
-			//create postfix string
-			bool addmult = false;
-			bool addmult_end = false;
-			for (char c : inputs) {
-				if (c == ' ') {
-					continue;
-				}
-				if (isOperator(c)) {
-					while (!tokens.empty() && !isOpenPar(c) && HasHigherPrec(tokens.top(), c)) {
-						postfix += tokens.top();
-						tokens.pop();
-					}
-					tokens.push(c);
-					addmult_end = false;
-					addmult = false;
-				}
-				else if (IsOperand(c)) {
-					if (addmult) {
-						tokens.push('*');
-					}
-					if (addmult_end) {
-						tokens.push('*');
-					}
-					addmult = true;
-					addmult_end = false;
-					postfix += c;
-				}
-				else if (isOpenPar(c)) {
-					if (addmult) {
-						tokens.push('*');
-					}
-					tokens.push(c);
-					addmult = false;
-					addmult_end = false;
-				}
-				else if (isClosePar(c)) {
-					while (!tokens.empty() && !isOpenPar(tokens.top())) {
-						postfix += tokens.top();
-						tokens.pop();
-					}
-					tokens.pop();
-					addmult = false;
-					addmult_end = true;
-				}
+		stack<Value> operands;
+		for (auto p : postfix_token) {
+			if (p.type == Tokens::VECTOR) {
+				operands.push(Value(vects.find(p.token)->second));
 			}
-			while (!tokens.empty()) {
-				postfix += tokens.top();
-				tokens.pop();
+			else if (p.type == Tokens::SCALAR) {
+				istringstream s(p.token); 
+				double val;
+				s >> val;
+				operands.push(Value(val));
 			}
-			//evaluate postfix
-			stack<Eval<int>> operands;
-			output = "";
-			for (char c : postfix) {
-				string finding = "";
-				finding += c;
-				if (IsVector(c)) {
-					Eval<int> temp(-1, vects.find(finding)->second, false, true);
-					operands.push(temp);
-				}
-				else if (IsScalar(c)) {
-					int temp_val = c - '0';
-					Eval<int> temp(temp_val, vects.begin()->second, true, false);
-					operands.push(temp);
-				}
-				else if (isOperator(c)) {
-					if (operands.size() < 2) {
-						output = "INVALID";
-						break;
-					}
-					Eval<int> opVal1 = operands.top();
-					operands.pop();
-					Eval<int> opVal2 = operands.top();
-					operands.pop();
-					Eval<int> resVal = EvalMe(opVal2, opVal1, c);
-					if (resVal.isScal && resVal.isVec) {
-						output = "INVALID";
-						break;
-					}
-					else {
-						operands.push(resVal);
-					}
-				}
-
-			}
-			if (output.size() == 0) {
-				stringstream ss;
-				if (operands.size() > 1)
+			else {
+				if (operands.size() < 2) {
 					output = "INVALID";
+					break;
+				}
+				Value op1 = operands.top();
+				operands.pop();
+				Value op2 = operands.top();
+				operands.pop();
+				Value resVal = EvalMe(op2, op1, p.token[0]);
+				if (resVal.type == Value::Type::ERROR) {
+					output = "INVALID";
+					break;
+				}
 				else {
-					if (operands.top().isScal) {
-						ss << to_string(operands.top().scal);
-						output = ss.str();
-					}
-
-					else {
-						ss << to_string(operands.top().vec.x) + " " + to_string(operands.top().vec.y);
-						output = ss.str();
-					}
-
+					operands.push(resVal);
 				}
 			}
-			cout << output + "\n";
-
-
 		}
-		else {
-			break;
+
+		if (output.size() == 0) {
+			if (operands.size() > 1) {
+				output = "INVALID";
+			}
+			else {
+				stringstream ss;
+				if (operands.top().type == Value::Type::VECTOR) {
+					ss << operands.top().vec.x << " " << operands.top().vec.y;
+					output = ss.str();
+				}
+				else {
+					ss << to_string(operands.top().scal);
+					output = ss.str();
+				}
+			}
 		}
+		cout << output << "\n";
 	}
 
-	system("PAUSE");
 	return 0;
 }
