@@ -15,11 +15,10 @@ class vector2
 	T y;
 	
 	//constructor
-	vector2::vector2(string& name, T& a, T&b)
+	vector2::vector2(T& a, T&b)
 	{
-		vector2 name;
-		name.x = a;
-		name.y = b;
+		x = a;
+		y = b;
 	}
 	
 	//vector addition
@@ -141,10 +140,13 @@ int main(int argc, char** argv)
 {
 	string declaration;
 	string input;
-	map<vector2, char> variables;
+	int xx, yy;
+	std:: map<vector2, char> variables;
 	while (input != '=')
 	{
-
+		cin >> input >> xx >> yy;
+		vector2 tmp = vector2(xx,yy);
+		variables.insert(std::pair<string,vector2>(input,tmp));
 
 	}
 	while(input != '=')
