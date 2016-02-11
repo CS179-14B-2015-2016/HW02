@@ -16,10 +16,10 @@ int operatorPrecedence(const char& op) {
 	switch(op) {
 		case '+': return 1;
 		case '-': return 1;
-		case '*': return 1;
-		case '%': return 1;
-		case '/': return 1;
-		case 's': return 2;
+		case '*': return 2;
+		case '%': return 2;
+		case '/': return 2;
+		case 's': return 3;
 	}
 	return 1;
 }
