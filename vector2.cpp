@@ -1,8 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include<cstring>
-#include<stack>
+#include <cstring>
+#include <stack>
+#include <map>
 
 using namespace std;
 
@@ -10,16 +11,15 @@ template<class T>
 class vector2
 {
 	public:
-	string name;
 	T x;
 	T y;
 	
 	//constructor
-	vector2::vector2(string& derp, T& a, T&b)
+	vector2::vector2(string& name, T& a, T&b)
 	{
-		name = derp;
-		x = a;
-		y = b;
+		vector2 name;
+		name.x = a;
+		name.y = b;
 	}
 	
 	//vector addition
@@ -66,15 +66,15 @@ int priority(char ch)
 {
    switch (ch) 
    {
-      case '*': return 4;
-	  case '/': return 3;
-      case '+': return 2;
+      case '*': 
+	  case '/': return 2;
+      case '+': 
       case '-': return 1;
       default : return 0;
    }
 }
 
-void postfixer(char infix[], char postfix[], int size) {
+void postfixer(char infix[ ], char postfix[], int size) {
 	stack<char> s;
 	int weight;
 	int i = 0;
@@ -106,7 +106,7 @@ void postfixer(char infix[], char postfix[], int size) {
 			continue;
 		}
 		//check if operator or number
-		weight = getWeight(ch);
+		weight = priority(ch);
 		if (weight == 0) 
 		{
 			postfix[k++] = ch;
@@ -139,28 +139,26 @@ void postfixer(char infix[], char postfix[], int size) {
 
 int main(int argc, char** argv)
 {
+	string declaration;
 	string input;
-	float xpos;
-	float ypos;
+	map<vector2, char> variables;
+	while (input != '=')
+	{
+
+
+	}
 	while(input != '=')
 	{
-		cin << input << xpos << ypos;
-		if (xpos.empty()) 
-		{
-			break;
-		}
-		if (ypos.empty()) 
-		{
-			break;
-		}
-		vector2::vector2(input,xpos,ypos);
+		cin >> input;
+		char infix[] = input;
+		int size = strlen(infix);
+		char postfix[size];
 	}
-   	//postfix things
-   	/*
+   
 	int size = strlen(infix);
 	char postfix[size];
 	postifxer(infix,postfix,size);
-	*/
+	
 	return 0;
 	
 	
